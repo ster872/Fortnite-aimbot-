@@ -1,0 +1,40 @@
+import pyautogui
+from PIL import Image
+import time
+
+def find_color_on_screen(target_color, tolerance=10):
+    screenshot = pyautogui.screenshot()
+    screenshot_rgb = screenshot.convert("RGB")
+    width, height = screenshot.size
+
+    for x in range(width):
+        for y in range(height):
+            current_color = screenshot_rgb.getpixel((x, y))
+            if all(abs(current - target) <= tolerance for current, target in zip(current_color, target_color)):
+                return x, y
+    return None
+
+# Example: Find the coordinates of a red pixel (RGB value: (255, 0, 0))
+target_color = (255, 0, 0)
+
+# Specify the time interval (in seconds) between each iteration of the loop
+interval = 1
+
+while True:
+    pixel_coordinates = find_color_on_screen(target_color)
+
+    if pixel_coordinates:
+        print(f"Found color at coordinates: {pixel_coordinates}")
+
+        # Move the mouse to the coordinates where the color is found
+        pyautogui.moveTo(pixel_coordinates)
+
+        # Optional: Click at the found coordinates
+        # pyautogui.click()
+
+    else:
+        print("Color not found on the screen. Exiting the loop.")
+        break
+
+    # Pause for the specified interval before the next iteration
+    time.sleep(interval)
